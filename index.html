@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Antenatal Calculator</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Antenatal Calc">
+<meta name="application-name" content="Antenatal Calc">
+<meta name="theme-color" content="#0f766e">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Styles -->
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+
+<body>
+<div class="page">
+
+  <!-- Theme toggle -->
+  <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark mode">
+    <span id="themeIcon">Dark</span>
+  </button>
+
+  <!-- Header -->
+  <header>
+    <div class="header-badge">Antenatal Calculator</div>
+    <h1>Antenatal<br><em>Calculator</em></h1>
+    <p>EDD · POG · Fetal Growth · Blood Glucose — works offline</p>
+  </header>
+
+  <!-- App-level tabs -->
+  <div class="app-tabs">
+    <button class="app-tab active" id="appTabOB" onclick="switchApp('ob')">EDD / POG</button>
+    <button class="app-tab" id="appTabFG" onclick="switchApp('fg')">Fetal Growth</button>
+    <button class="app-tab" id="appTabBG" onclick="switchApp('bg')">Blood Glucose</button>
+  </div>
+
+  <!-- ═══ OB PAGE ═══ -->
+  <div class="app-page active" id="appPageOB">
+
+  <!-- Main card -->
+  <div class="card">
+
+    <!-- Today's Date (shared) -->
+    <div class="section-head">
+      <div class="dot"></div>
+      <h3>Today's Date</h3>
+      <span class="auto-tag" id="autoTag">Auto-filled</span>
+    </div>
+    <div class="date-grid">
+      <div class="field">
+        <label>Year</label>
+        <input type="number" id="xYear" placeholder="e.g. 2081" min="2079" max="2086" oninput="onInputChange(this,'xYearErr')">
+        <div class="field-error" id="xYearErr"></div>
+      </div>
+      <div class="field">
+        <label>Month</label>
+        <select id="xMonth" onchange="onSelectChange(this,'xMonthErr')"></select>
+        <div class="field-error" id="xMonthErr"></div>
+      </div>
+      <div class="field">
+        <label>Day</label>
+        <input type="number" id="xDay" placeholder="1–30" min="1" max="30" oninput="onInputChange(this,'xDayErr')">
+        <div class="field-error" id="xDayErr"></div>
+      </div>
+    </div>
+
+    <div class="section-sep"></div>
+
+    <!-- Method tabs -->
+    <div class="method-tabs">
+      <button class="method-tab active" id="tabLMP" onclick="switchMethod('lmp')">By LMP</button>
+      <button class="method-tab" id="tabScan" onclick="switchMethod('scan')">By Dating Scan</button>
+    </div>
+
+    <!-- LMP panel -->
+    <div class="method-panel active" id="panelLMP">
+      <div class="section-head">
+        <div class="dot" style="background:var(--gold);box-shadow:0 0 0 3px rgba(217,119,6,0.12)"></div>
+        <h3>First Day of LMP</h3>
+      </div>
+      <div class="date-grid">
+        <div class="field">
+          <label>Year</label>
+          <input type="number" id="yYear" placeholder="e.g. 2081" min="2079" max="2086" oninput="onInputChange(this,'yYearErr')">
+          <div class="field-error" id="yYearErr"></div>
+        </div>
+        <div class="field">
+          <label>Month</label>
+          <select id="yMonth" onchange="onSelectChange(this,'yMonthErr')"></select>
+          <div class="field-error" id="yMonthErr"></div>
+        </div>
+        <div class="field">
+          <label>Day</label>
+          <input type="number" id="yDay" placeholder="1–30" min="1" max="30" oninput="onInputChange(this,'yDayErr')">
+          <div class="field-error" id="yDayErr"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dating Scan panel -->
+    <div class="method-panel" id="panelScan">
+      <div class="section-head">
+        <div class="dot" style="background:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.12)"></div>
+        <h3>Dating Scan (1st Trimester)</h3>
+      </div>
+      <div class="scan-note">
+        Enter the <strong>scan date</strong> and the <strong>GA at scan</strong> (weeks + days as reported by sonologist). EDD and current POG will be back-calculated.
+      </div>
+
+      <!-- Scan date -->
+      <div class="section-head" style="margin-bottom:10px">
+        <h3 style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Scan Date (BS)</h3>
+      </div>
+      <div class="date-grid" style="margin-bottom:16px">
+        <div class="field">
+          <label>Year</label>
+          <input type="number" id="sYear" placeholder="e.g. 2081" min="2079" max="2086" oninput="onInputChange(this,'sYearErr')">
+          <div class="field-error" id="sYearErr"></div>
+        </div>
+        <div class="field">
+          <label>Month</label>
+          <select id="sMonth" onchange="onSelectChange(this,'sMonthErr')"></select>
+          <div class="field-error" id="sMonthErr"></div>
+        </div>
+        <div class="field">
+          <label>Day</label>
+          <input type="number" id="sDay" placeholder="1–30" min="1" max="30" oninput="onInputChange(this,'sDayErr')">
+          <div class="field-error" id="sDayErr"></div>
+        </div>
+      </div>
+
+      <!-- GA at scan -->
+      <div class="section-head" style="margin-bottom:10px">
+        <h3 style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Gestational Age at Scan</h3>
+      </div>
+      <div class="ga-grid">
+        <div class="field">
+          <label>Weeks</label>
+          <input type="number" id="gaWeeks" placeholder="e.g. 10" min="6" max="13" oninput="onInputChange(this,'gaWeeksErr')">
+          <div class="field-error" id="gaWeeksErr"></div>
+        </div>
+        <div class="field">
+          <label>Days (0–6)</label>
+          <input type="number" id="gaDays" placeholder="e.g. 3" min="0" max="6" oninput="onInputChange(this,'gaDaysErr')">
+          <div class="field-error" id="gaDaysErr"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">
+      Calculate
+    </button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-wrap" id="resultWrap">
+    <div class="result-card">
+      <div class="result-header">
+        <span>Results</span>
+        <button class="copy-btn" id="copyBtn" onclick="copyResult()" style="display:none">
+          Copy
+        </button>
+      </div>
+      <div class="result-body" id="resultBody">
+        <div class="result-empty">
+          
+          Fill in both dates above and tap <strong>Calculate</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-banner">
+    
+    <span><strong>LMP method:</strong> EDD = LMP + 9 months + 7 days. <strong>Dating Scan method:</strong> Enter GA reported by sonologist (6–13 weeks); EDD and current POG are back-calculated. Always confirm with clinical judgement.</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <strong>@Jimi Syangbo</strong> · MBBS 4th Year, MMC<br>
+    Designed for healthcare professionals in Nepal
+  </footer>
+
+  </div><!-- end appPageOB -->
+
+  <!-- ═══ FETAL GROWTH PAGE ═══ -->
+  <div class="app-page" id="appPageFG">
+
+  <div class="fg-card">
+    <!-- GA Input -->
+    <div class="fg-section-head">
+      <div class="fg-dot" style="background:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)"></div>
+      <h3>Gestational Age</h3>
+    </div>
+    <div class="ga-row">
+      <div class="meas-field">
+        <label>Weeks</label>
+        <input type="number" id="fgWeeks" placeholder="14 – 40" min="14" max="40" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgWeeksErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>Days (0–6)</label>
+        <input type="number" id="fgDays" placeholder="0 – 6" min="0" max="6" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgDaysErr"></div>
+      </div>
+    </div>
+
+    <div class="fg-sep"></div>
+
+    <!-- Sex selection (for EFW by sex) -->
+    <div class="fg-section-head">
+      <div class="fg-dot" style="background:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.12)"></div>
+      <h3>Fetal Sex <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;">(for EFW by sex — optional)</span></h3>
+    </div>
+    <div class="sex-row">
+      <button class="sex-btn active" id="sexUnknown" onclick="setSex('unknown')">Unknown</button>
+      <button class="sex-btn" id="sexMale"    onclick="setSex('male')">Male</button>
+      <button class="sex-btn" id="sexFemale"  onclick="setSex('female')">Female</button>
+    </div>
+
+    <div class="fg-sep"></div>
+
+    <!-- Measurements -->
+    <div class="fg-section-head">
+      <div class="fg-dot" style="background:var(--gold);box-shadow:0 0 0 3px rgba(217,119,6,0.12)"></div>
+      <h3>Measurements <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;">(mm — leave blank to skip)</span></h3>
+    </div>
+    <div class="meas-grid">
+      <div class="meas-field">
+        <label>HC (mm)</label>
+        <input type="number" id="fgHC" placeholder="Head Circ." min="50" max="400" step="0.1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgHCErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>AC (mm)</label>
+        <input type="number" id="fgAC" placeholder="Abdom. Circ." min="50" max="400" step="0.1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgACErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>FL (mm)</label>
+        <input type="number" id="fgFL" placeholder="Femur Length" min="5" max="100" step="0.1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgFLErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>BPD (mm)</label>
+        <input type="number" id="fgBPD" placeholder="Biparietal" min="20" max="120" step="0.1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgBPDErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>HL (mm)</label>
+        <input type="number" id="fgHL" placeholder="Humerus" min="5" max="80" step="0.1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgHLErr"></div>
+      </div>
+      <div class="meas-field">
+        <label>EFW (g)</label>
+        <input type="number" id="fgEFW" placeholder="Est. Fetal Wt." min="50" max="5000" step="1" oninput="fgInputChange(this)">
+        <div class="field-error" id="fgEFWErr"></div>
+      </div>
+    </div>
+    <div id="hadlockNote" style="font-size:11px;color:var(--teal);margin-top:8px;font-family:JetBrains Mono,monospace;min-height:16px;padding:0 2px;"></div>
+
+    <button class="calc-btn" style="margin-top:20px;" onclick="calculateFG();">
+      Calculate Percentiles
+    </button>
+  </div>
+
+  <!-- FG Results -->
+  <div class="fg-result-wrap" id="fgResultWrap">
+    <div class="fg-result-card">
+      <div class="fg-result-header">
+        <span>Percentile Results</span>
+      </div>
+      <div id="fgResultBody">
+        <div class="fg-empty">Enter GA and at least one measurement, then tap Calculate.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="fg-chart-wrap" id="fgChartWrap" style="display:none">
+    <div class="fg-chart-title">Growth Chart</div>
+    <div class="chart-tabs" id="chartTabs"></div>
+    <canvas class="fg-canvas" id="fgCanvas"></canvas>
+  </div>
+
+  <!-- FG Info -->
+  <div class="fg-info-banner">
+    Based on <strong>WHO Fetal Growth Charts</strong> (Kiserud et al., PLOS Medicine 2017 &mdash; <a href="https://github.com/jcarvalho45/whoFetalGrowth" target="_blank" style="color:var(--teal)">coefficients</a>).
+    Valid for GA 14&ndash;40 weeks. Percentiles: 2.5th, 5th, 10th, 25th, <strong>50th</strong>, 75th, 90th, 95th, 97.5th.
+    Measurements in <strong>mm</strong>; EFW in <strong>g</strong>. EFW auto-estimated via Hadlock III (AC+HC+FL).
+    Click any row in the results table to view its growth chart. For clinical guidance only.
+  </div>
+
+  <footer style="margin-top:20px;">
+    <strong>@Jimi Syangbo</strong> · MBBS 4th Year, MMC<br>
+    WHO Fetal Growth Charts · Global Reference
+  </footer>
+
+  </div><!-- end appPageFG -->
+
+  <!-- ═══ BLOOD GLUCOSE PAGE ═══ -->
+  <div class="app-page" id="appPageBG">
+
+  <div class="card">
+    <!-- Converter -->
+    <div class="section-head">
+      <div class="dot" style="background:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,0.12)"></div>
+      <h3>Unit Converter</h3>
+    </div>
+
+    <div class="date-grid" style="margin-bottom:6px">
+      <div class="field">
+        <label>mmol/L</label>
+        <input type="number" id="bgMmol" placeholder="e.g. 5.1" step="0.1"
+          oninput="bgConvert('mmol')" class="field-input">
+        <div class="field-error" id="bgMmolErr"></div>
+      </div>
+      <div class="field" style="display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--teal);padding-top:18px">
+        ⇌
+      </div>
+      <div class="field">
+        <label>mg/dL</label>
+        <input type="number" id="bgMgdl" placeholder="e.g. 92" step="1"
+          oninput="bgConvert('mgdl')" class="field-input">
+        <div class="field-error" id="bgMgdlErr"></div>
+      </div>
+    </div>
+    <div id="bgConvertNote" style="font-size:11px;color:var(--muted);font-family:JetBrains Mono,monospace;margin-bottom:4px;min-height:16px;"></div>
+
+    <div class="section-sep"></div>
+
+    <!-- OGTT -->
+    <div class="section-head">
+      <div class="dot" style="background:var(--gold);box-shadow:0 0 0 3px rgba(217,119,6,0.12)"></div>
+      <h3>OGTT Analysis <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;">(75g — GDM Diagnosis per IADPSG/WHO 2013)</span></h3>
+    </div>
+
+    <div class="scan-note">
+      Enter values in <strong>mg/dL</strong>. GDM is diagnosed if <strong>any one</strong> value meets or exceeds the threshold:<br>
+      Fasting &ge; 92 &nbsp;·&nbsp; 1-hour &ge; 180 &nbsp;·&nbsp; 2-hour &ge; 153
+    </div>
+
+    <div class="date-grid" style="margin-bottom:6px">
+      <div class="field">
+        <label>Fasting (mg/dL)</label>
+        <input type="number" id="ogttF" placeholder="≥92 = GDM" step="1"
+          oninput="ogttAnalyze()" class="field-input">
+      </div>
+      <div class="field">
+        <label>1-Hour (mg/dL)</label>
+        <input type="number" id="ogtt1h" placeholder="≥180 = GDM" step="1"
+          oninput="ogttAnalyze()" class="field-input">
+      </div>
+      <div class="field">
+        <label>2-Hour (mg/dL)</label>
+        <input type="number" id="ogtt2h" placeholder="≥153 = GDM" step="1"
+          oninput="ogttAnalyze()" class="field-input">
+      </div>
+    </div>
+
+    <div id="ogttResult" style="margin-top:8px;"></div>
+
+    <button class="calc-btn" onclick="ogttShare()" id="ogttShareBtn" style="display:none;margin-top:12px;">
+      Copy Result
+    </button>
+  </div>
+
+  <div class="info-banner" style="margin-top:12px;">
+    <span>
+      <strong>Conversion:</strong> mg/dL = mmol/L &times; 18.018 &nbsp;|&nbsp; mmol/L = mg/dL &divide; 18.018<br>
+      <strong>OGTT criteria:</strong> IADPSG 2010 / WHO 2013 (75g oral glucose, venous plasma). Diagnosis requires &ge;1 abnormal value.
+      Always confirm with clinical judgement.
+    </span>
+  </div>
+
+  <footer style="margin-top:20px;">
+    <strong>@Jimi Syangbo</strong> · MBBS 4th Year, MMC<br>
+    IADPSG / WHO 2013 GDM Criteria
+  </footer>
+
+  </div><!-- end appPageBG -->
+
+
+</div>
+
+<!-- Scripts -->
+
+
+</html>
+
+
+<!-- App Script -->
+<script src="app.js?v=3"></script>
+
+<!-- Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(function(reg) {
+        console.log('SW registered:', reg.scope);
+        reg.onupdatefound = function() {
+          var nw = reg.installing;
+          nw.onstatechange = function() {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              if (confirm('New version available. Update now?')) {
+                nw.postMessage('SKIP_WAITING');
+              }
+            }
+          };
+        };
+      })
+      .catch(function(err) { console.log('SW failed:', err); });
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      window.location.reload();
+    });
+  });
+}
+</script>
+
+</body>
+</html>
